@@ -223,5 +223,5 @@ void loop() {
     if(winner == WINNER_NONE) updateCarrotPos();
     redraw = true;
   }
-  delay(500);
+  delay(100);
 }

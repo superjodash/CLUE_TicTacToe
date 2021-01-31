@@ -35,6 +35,8 @@
 #define WINNER_O 2
 #define WINNER_TIE 3
 
+#define LOOP_DELAY 150
+
 Adafruit_Arcada arcada;
 
 const int CELL_SIZE = (BOARD_WIDTH - (BOARD_LINE_WIDTH * 2)) / 3;
@@ -44,7 +46,7 @@ byte board[] = {0,0,0,0,0,0,0,0,0};
 byte carrotPos = 0;
 bool xTurn = true;
 bool redraw = true;
-bool winner = 0;
+byte winner = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -83,17 +85,22 @@ void drawBoard() {
 
 void drawHeading() {
   arcada.display->setCursor(BOARD_X, 0);
-  arcada.display->setTextColor(ARCADA_WHITE);
+  
   if(winner != WINNER_NONE) {
-    if(winner == WINNER_X)
+    if(winner == WINNER_X) {
+      arcada.display->setTextColor(ARCADA_CYAN);
       arcada.display->print("X Wins!");
-    else if(winner == WINNER_O)
+    } else if(winner == WINNER_O) {
+      arcada.display->setTextColor(ARCADA_PINK);
       arcada.display->print("O Wins!");
-    else
+    } else {
+      arcada.display->setTextColor(ARCADA_WHITE);
       arcada.display->print("Tie Game!");
+    }
     return;
   }
   
+  arcada.display->setTextColor(ARCADA_YELLOW);
   if(xTurn)
     arcada.display->print("X Turn");
   else 
@@ -165,10 +172,11 @@ void commitPiece() {
 }
 
 void checkWinner() {
-  if(isWinner(PLAYER_X))
+  if(isWinner(PLAYER_X)) {
     winner = WINNER_X;
-  else if(isWinner(PLAYER_O))
+  } else if(isWinner(PLAYER_O)) {
     winner = WINNER_O;
+  }
   
   if(winner == WINNER_NONE) {
     for(int i = 0; i < 9; i++) {
@@ -220,8 +228,9 @@ void loop() {
   } else if (digitalRead(BUTTON_B) == 0) {
     commitPiece();
     checkWinner();
-    if(winner == WINNER_NONE) updateCarrotPos();
+    if(winner == WINNER_NONE)
+      updateCarrotPos();
     redraw = true;
   }
-  delay(100);
+  delay(LOOP_DELAY);
 }
